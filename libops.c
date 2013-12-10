@@ -1,21 +1,9 @@
 #include "libops.h"
 
-int P(int semid)
-{
-    struct sembuf sops = {0, 1, SEM_UNDO};
-    return (semop(semid, &sops, 1));
-}
-
-int V(int semid)
-{
-    struct sembuf sops = {0, -1, SEM_UNDO};
-    return (semop(semid, &sops, 1));
-}
-
-key_t getPutKey()
+key_t getPutKey(int token)
 {
     key_t mkey;
-    mkey = ftok(".", PUT_KEY_GEN);
+    mkey = ftok(".", token);
     if(mkey < 0){
         perror("generate put key failed. exit");
         exit(GEN_KEY_ERROR);
@@ -24,10 +12,10 @@ key_t getPutKey()
     return mkey;
 }
 
-key_t getGetKey()
+key_t getGetKey(int token)
 {
     key_t mkey;
-    mkey = ftok(".", GET_KEY_GEN);
+    mkey = ftok(".", token);
     if(mkey < 0){
         perror("generate put key failed. exit");
         exit(GEN_KEY_ERROR);

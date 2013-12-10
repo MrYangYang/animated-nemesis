@@ -3,12 +3,26 @@
 int main(int argc, char **argv)
 {
     int shmid;
-    int semid;
-    char *shmbuf;
-    key_t mkey = getGetKey();
 
-    // identifer of opened file (a.txt)
-    int fid;
+    // empty & full
+    int esemid, fsemid;
+    char *shmbuf;
+
+    // msg queue to copy
+    int msqid;
+    key_t msgkey = getGetKey(GET_TO_CP_MSG_KEY);
+    msqid = msgget(msgkey, IPC_CREAT);
+
+    FILE *f = NULL;
+    f = fopen("a.txt", "r");
+
+    struct sembuf lock = {0, -1, SEM_UNDO};
+    struct sembuf unlock = {0, 1, SEM_UNDO};
+    
+    key_t ekey = getGetKey(GET_EMPTY_KEY_GEN);
+    key_t fkey = getGetKey(GET_FULL_KEY_GEN);
+    key_t mkey = getGetKey(GET_SHM_KEY_GEN);
+
     shmid = shmget(mkey, BUFF_SZ, IPC_CREAT|0666);
     if(shmid == -1){
         perror("create shared memory failed.");
@@ -16,36 +30,36 @@ int main(int argc, char **argv)
     }
 
     // TODO create semaphores
-    semid = semget(mkey, 1, IPC_CREAT|0666);
-    if(semid == -1){
+    esemid = semget(ekey, 1, IPC_CREAT|0666);
+    if(esemid == -1){
         perror("create semaphores failed");
         exit(CREATE_SEM_ERROR);
     }
 
-    // TODO ops V.
-    if(V(semid) == -1){
-        perror("ops V error");
-        exit(OPS_SEM_ERROR);
+    fsemid = semget(fkey, 1, IPC_CREAT|0666);
+    if(fsemid == -1){
+        perror("create semaphores failed");;
+        exit(CREATE_SEM_ERROR);
     }
+
+    printf("shmid %d, esemid %d, fsemid %d\n", shmid, esemid, fsemid);
 
     // map shm
     shmbuf = (char *)shmat(shmid, 0, 0);
-    // open a.txt
-    fid = open("a.txt", O_RDONLY);
 
-    if(fid == -1){
-        perror("open file for read failed.");
-        exit(OPEN_FILE_ERROR);
-    }
-
-    while(read(fid, shmbuf, BUFF_SZ) != -1)
-        // TODO ops P;
-        P(semid);
-        V(semid);
+    semop(fsemid, &unlock, 1); 
+    while(!feof(f)){
+        // TODO ops P 
+        semop(esemid, &lock, 1);
+        fread(shmbuf, BUFF_SZ, 1, f);
+        semop(fsemid, &unlock, 1);
     }
 
     // TODO send msg to copy process. tell it to exit.
-
-    close(fid);
+    mymsg msg;
+    msg.type = 100;
+    msgsnd(msqid, &msg, sizeof(mymsg), IPC_NOWAIT);
+    
+    fclose(f);
     return 0;
 }

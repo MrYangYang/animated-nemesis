@@ -18,8 +18,15 @@
 #define MYMSG_TYPE_EXIT 1
 
 // get key gen num
-#define GET_KEY_GEN 1
-#define PUT_KEY_GEN 2
+#define GET_EMPTY_KEY_GEN 1
+#define GET_FULL_KEY_GEN 2
+#define PUT_EMPTY_KEY_GEN 3
+#define PUT_FULL_KEY_GEN 4
+#define GET_SHM_KEY_GEN 5
+#define PUT_SHM_KEY_GEN 6
+#define GET_TO_CP_MSG_KEY 7
+#define COPY_TO_PUT_MSG_KEY 8
+
 
 #define GEN_KEY_ERROR -1
 #define CREATE_SHM_ERROR -2
@@ -34,15 +41,10 @@ typedef struct _mymsg
     long mtype;
 } mymsg;
 
-// P ops.
-int P(int semid);
-
-// V ops
-int V(int semid);
 
 // get put process key_t
-key_t getPutKey();
+key_t getPutKey(int token);
 
 // get GET process key_t
-key_t getGetKey();
+key_t getGetKey(int token);
 #endif
