@@ -47,19 +47,21 @@ int main(int argc, char **argv)
     // map shm
     shmbuf = (char *)shmat(shmid, 0, 0);
 
-    semop(fsemid, &unlock, 1); 
+    // semop(fsemid, &unlock, 1);
+
     while(!feof(f)){
         // TODO ops P 
+        semop(fsemid, &unlock, 1);
         semop(esemid, &lock, 1);
         fread(shmbuf, BUFF_SZ, 1, f);
-        semop(fsemid, &unlock, 1);
     }
 
     // TODO send msg to copy process. tell it to exit.
     mymsg msg;
     msg.mtype = 100;
     msgsnd(msqid, &msg, sizeof(mymsg), IPC_NOWAIT);
-    
+    semop(fsemid, &unlock, 1);
+
     fclose(f);
     return 0;
 }

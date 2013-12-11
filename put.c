@@ -58,16 +58,7 @@ int main(void)
     // loop, put buffer data to file.
     int ret_v;
     while(1){
-        // work is done.
-        ret_v = msgrcv(msqid, &msgobj, sizeof(mymsg), 0, IPC_NOWAIT);
-        if(ret_v != -1 && msgobj.mtype == MSG_TYPE_EXIT){
-            semctl(fsemid, IPC_RMID, 0);
-            semctl(esemid, IPC_RMID, 0);
-            shmctl(shmid, IPC_RMID, (struct shmid_ds *)shmbuf);
-            msgctl(msqid, IPC_RMID, 0);
-            exit(0);
-        }
-
+        
         // lock full
         ret_v = semop(fsemid, &lock, 1);
         if(ret_v == -1){
@@ -78,7 +69,19 @@ int main(void)
             exit(OPS_SEM_ERROR);
         }
 
+        
+        ret_v = msgrcv(msqid, &msgobj, sizeof(mymsg), 0, IPC_NOWAIT);
+        if(ret_v != -1 && msgobj.mtype == MSG_TYPE_EXIT){
+            semctl(fsemid, IPC_RMID, 0);
+            semctl(esemid, IPC_RMID, 0);
+            shmctl(shmid, IPC_RMID, (struct shmid_ds *)shmbuf);
+            msgctl(msqid, IPC_RMID, 0);
+            exit(0);
+        }
+        
         // TODO output data.
+        putchar(*shmbuf);
+
 
         // unlock empty
         ret_v = semop(esemid, &unlock, 1);
@@ -90,4 +93,5 @@ int main(void)
             exit(OPS_SEM_ERROR);
         }
     }
+    return 0;
 }
