@@ -59,7 +59,7 @@ int main(void)
 
     // loop, put buffer data to file.
     
-    fout = fopen("b.txt", "w+");
+    fout = fopen("b.txt", "wb+");
 
     int ret_v;
     while(1){

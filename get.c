@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     msqid = msgget(msgkey, IPC_CREAT|IPC_NOWAIT|0666);
 
     FILE *f = NULL;
-    f = fopen("a.txt", "r");
+    f = fopen("a.txt", "rb");
 
     struct sembuf lock = {0, -1, SEM_UNDO};
     struct sembuf unlock = {0, 1, SEM_UNDO};
