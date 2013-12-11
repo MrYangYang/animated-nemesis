@@ -19,18 +19,18 @@ int main(void)
     key_t msgkey = getKey(COPY_TO_PUT_MSG_KEY);
 
     // get sem.
-    fsemid = semget(fkey, IPC_CREAT|0666);
+    fsemid = semget(fkey, 1, IPC_CREAT|0666);
     if(fsemid == -1){
         exit(CREATE_SEM_ERROR);
     }
-    esemid = semget(ekey, IPC_CREAT|0666);
+    esemid = semget(ekey, 1, IPC_CREAT|0666);
     if(esemid == -1){
         semctl(fsemid, IPC_RMID, 0);
         exit(CREATE_SEM_ERROR);
     }
 
     // get shm
-    shmid = shmget(shmkey, BUFF_Z, IPC_CREAT|0666|IPC_NOWAIT);
+    shmid = shmget(shmkey, BUFF_SZ, IPC_CREAT|0666|IPC_NOWAIT);
     if(shmid == -1){
         semctl(fsemid, IPC_RMID, 0);
         semctl(esemid, IPC_RMID, 0);
@@ -39,7 +39,7 @@ int main(void)
 
     // map shm
     shmbuf = (char *)shmat(shmid, 0, IPC_NOWAIT);
-    if(shmbuf == -1){
+    if(shmbuf == (char *)-1){
         semctl(esemid, IPC_RMID, 0);
         semctl(fsemid, IPC_RMID, 0);
         shmctl(shmid, IPC_RMID, (struct shmid_ds *)shmbuf);
@@ -60,7 +60,7 @@ int main(void)
     while(1){
         // work is done.
         ret_v = msgrcv(msqid, &msgobj, sizeof(mymsg), 0, IPC_NOWAIT);
-        if(ret_v != -1 && msgobj.mtype = MSG_TYPE_EXIT){
+        if(ret_v != -1 && msgobj.mtype == MSG_TYPE_EXIT){
             semctl(fsemid, IPC_RMID, 0);
             semctl(esemid, IPC_RMID, 0);
             shmctl(shmid, IPC_RMID, (struct shmid_ds *)shmbuf);

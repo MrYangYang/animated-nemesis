@@ -27,6 +27,8 @@
 #define GET_TO_CP_MSG_KEY 7
 #define COPY_TO_PUT_MSG_KEY 8
 
+#define MSG_TYPE_EXIT 100
+
 
 #define GEN_KEY_ERROR -1
 #define CREATE_SHM_ERROR -2

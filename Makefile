@@ -3,7 +3,7 @@ CFLAGS = -Wall
 DEBUG_FLAG = -g
 LIBS = 
 
-all: copy get
+all: copy get put
 
 copy: copy.o libops.o
 	${CC} $(CFLAGS) $(LIBS) copy.o libops.o -o copy
@@ -11,7 +11,8 @@ copy: copy.o libops.o
 get: get.o libops.o
 	${CC} $(CFLAGS) $(LIBS) get.o libops.o -o get
 
-put:
+put: put.o libops.o
+	${CC} $(CFLAGS) $(LIBS) put.o libops.o -o put
 
 
 clean:
