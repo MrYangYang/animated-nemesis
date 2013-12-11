@@ -33,6 +33,7 @@
 #define OPEN_FILE_ERROR -3
 #define CREATE_SEM_ERROR -4
 #define OPS_SEM_ERROR -5
+#define CREATE_MSQ_ERROR -6
 
 #define BUFF_SZ 1
 
@@ -41,10 +42,7 @@ typedef struct _mymsg
     long mtype;
 } mymsg;
 
+// use a number (0-255) to get a unique key.
+key_t getKey(int token);
 
-// get put process key_t
-key_t getPutKey(int token);
-
-// get GET process key_t
-key_t getGetKey(int token);
 #endif

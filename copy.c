@@ -16,11 +16,11 @@ int main(int argc, char **argv)
     struct sembuf lock = {0, -1, SEM_UNDO};
     struct sembuf unlock = {0, +1, SEM_UNDO};
 
-    key_t gekey = getGetKey(GET_EMPTY_KEY_GEN);
-    key_t gfkey = getGetKey(GET_FULL_KEY_GEN);
-    key_t gkey = getGetKey(GET_SHM_KEY_GEN);
+    key_t gekey = getKey(GET_EMPTY_KEY_GEN);
+    key_t gfkey = getKey(GET_FULL_KEY_GEN);
+    key_t gkey = getKey(GET_SHM_KEY_GEN);
 
-    key_t gmkey = getGetKey(GET_TO_CP_MSG_KEY);
+    key_t gmkey = getKey(GET_TO_CP_MSG_KEY);
     int gmsqid = msgget(gmkey, IPC_NOWAIT | IPC_CREAT | 0666);
 
     // TODO get psemid;
@@ -48,16 +48,16 @@ int main(int argc, char **argv)
     mymsg msg;
     while(loo_flag){
         // TODO ops V for get process
-        semop(gfsemid, &lock, 1);
-
         ret_v = msgrcv(gmsqid, &msg, sizeof(mymsg), 0, IPC_NOWAIT);
         if(ret_v != -1 && msg.mtype == 100){
             shmctl(gshmid, IPC_RMID, (struct shmid_ds *)shmbuf);
             semctl(gfsemid, 0, IPC_RMID);
             semctl(gesemid, 0, IPC_RMID);
-
+            msgctl(gmsqid, IPC_RMID, (struct msqid_ds *)(&msg));
             exit(0);
-        }
+        }semop(gfsemid, &lock, 1);
+
+
 
         memcpy(buff, shmbuf, BUFF_SZ);
         // TODO ops P for get process

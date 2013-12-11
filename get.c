@@ -10,8 +10,8 @@ int main(int argc, char **argv)
 
     // msg queue to copy
     int msqid;
-    key_t msgkey = getGetKey(GET_TO_CP_MSG_KEY);
-    msqid = msgget(msgkey, IPC_CREAT);
+    key_t msgkey = getKey(GET_TO_CP_MSG_KEY);
+    msqid = msgget(msgkey, IPC_CREAT|IPC_NOWAIT|0666);
 
     FILE *f = NULL;
     f = fopen("a.txt", "r");
@@ -19,9 +19,9 @@ int main(int argc, char **argv)
     struct sembuf lock = {0, -1, SEM_UNDO};
     struct sembuf unlock = {0, 1, SEM_UNDO};
     
-    key_t ekey = getGetKey(GET_EMPTY_KEY_GEN);
-    key_t fkey = getGetKey(GET_FULL_KEY_GEN);
-    key_t mkey = getGetKey(GET_SHM_KEY_GEN);
+    key_t ekey = getKey(GET_EMPTY_KEY_GEN);
+    key_t fkey = getKey(GET_FULL_KEY_GEN);
+    key_t mkey = getKey(GET_SHM_KEY_GEN);
 
     shmid = shmget(mkey, BUFF_SZ, IPC_CREAT|0666);
     if(shmid == -1){
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
     // TODO send msg to copy process. tell it to exit.
     mymsg msg;
-    msg.type = 100;
+    msg.mtype = 100;
     msgsnd(msqid, &msg, sizeof(mymsg), IPC_NOWAIT);
     
     fclose(f);
