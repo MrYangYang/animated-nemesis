@@ -1,6 +1,7 @@
 put
 get
 copy
+main
 
 *.o
 

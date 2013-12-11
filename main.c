@@ -4,6 +4,9 @@ int main(int argc, char **argv)
 {
     pid_t chld_pid;
     chld_pid = fork();
+
+    char *args[] = {NULL};
+
     if(chld_pid == -1){
         printf("fork error\n");
         exit(FORK_ERROR);
@@ -19,15 +22,15 @@ int main(int argc, char **argv)
         
         // parent proc
         if(chld_pid){
-            execv("./get", NULL);
+            execv("./get", args);
         // else child proc
         } else {
-            execv("./copy", NULL);
+            execv("./copy", args);
         }
     
     // else child proc
     } else {
-        execv("./put", NULL);
+        execv("./put", args);
     }
 
     return 0;
