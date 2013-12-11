@@ -6,6 +6,8 @@ int main(void)
     int shmid;
     int msqid;
 
+    FILE *fout = NULL;
+
     char *shmbuf;
     mymsg msgobj;
 
@@ -30,7 +32,7 @@ int main(void)
     }
 
     // get shm
-    shmid = shmget(shmkey, BUFF_SZ, IPC_CREAT|0666|IPC_NOWAIT);
+    shmid = shmget(shmkey, BUFF_SZ, IPC_CREAT|0666);
     if(shmid == -1){
         semctl(fsemid, IPC_RMID, 0);
         semctl(esemid, IPC_RMID, 0);
@@ -56,6 +58,9 @@ int main(void)
     }
 
     // loop, put buffer data to file.
+    
+    fout = fopen("b.txt", "w+");
+
     int ret_v;
     while(1){
         
@@ -80,7 +85,7 @@ int main(void)
         }
         
         // TODO output data.
-        putchar(*shmbuf);
+        fwrite(shmbuf, BUFF_SZ, 1, fout);
 
 
         // unlock empty

@@ -36,6 +36,7 @@
 #define CREATE_SEM_ERROR -4
 #define OPS_SEM_ERROR -5
 #define CREATE_MSQ_ERROR -6
+#define FORK_ERROR -7
 
 #define BUFF_SZ 1
 

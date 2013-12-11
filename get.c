@@ -42,12 +42,9 @@ int main(int argc, char **argv)
         exit(CREATE_SEM_ERROR);
     }
 
-    printf("shmid %d, esemid %d, fsemid %d\n", shmid, esemid, fsemid);
 
     // map shm
     shmbuf = (char *)shmat(shmid, 0, 0);
-
-    // semop(fsemid, &unlock, 1);
 
     while(!feof(f)){
         // TODO ops P 
